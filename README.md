@@ -5,6 +5,7 @@ As it uses uinput to create the virtual device, this script is only compatible w
 ## Dependencies
 * python-uinput
 * approxeng.input
+
 Both of these can be installed through pip.
 
 ## Setup
