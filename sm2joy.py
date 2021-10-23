@@ -27,14 +27,16 @@ events = (
     uinput.ABS_RX + (-350, 350, 0, 0),
     uinput.ABS_RY + (-350, 350, 0, 0),
     uinput.ABS_RZ + (-350, 350, 0, 0),
+    uinput.ABS_THROTTLE + (-350, 350, 0, 0),
     )
 
 scale = 350
+jiggler = 0
 
 while True:
     try:
         with ControllerResource() as sm:
-            with uinput.Device(events) as device:
+            with uinput.Device(events, name="sm2joy-device", vendor=0xF00, product=0x0BA5) as device:
                 print('Found a SpaceMouse and connected to it.')
                 last_z = 0
                 while sm.connected:
@@ -56,6 +58,7 @@ while True:
                         device.emit(uinput.BTN_1, 1)
                     else:
                         device.emit(uinput.BTN_1, 0)
+                    device.emit(uinput.ABS_THROTTLE, jiggler, syn=False)
                     device.emit(uinput.ABS_X, int(sm.lx * scale), syn=False)
                     device.emit(uinput.ABS_Y, int(sm.ly * scale), syn=False)
                     device.emit(uinput.ABS_Z, int(sm.lz * scale), syn=False)
@@ -63,6 +66,8 @@ while True:
                     device.emit(uinput.ABS_RX, int(sm.roll * scale), syn=False)
                     device.emit(uinput.ABS_RY, int(sm.pitch * scale), syn=False)
                     device.emit(uinput.ABS_RZ, int(sm.yaw * scale), syn=True)
+                    jiggler = -jiggler
+                    sleep(0.006)
         print('Connection to SpaceMouse lost')
     except IOError:
         print("Unable to find a SpaceMouse yet!")
